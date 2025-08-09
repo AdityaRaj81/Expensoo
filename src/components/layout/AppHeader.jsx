@@ -5,6 +5,7 @@ import { Bell, ChevronDown, Menu } from 'lucide-react';
 function AppHeader({ onSidebarToggle }) {
   const location = useLocation();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -49,9 +50,20 @@ function AppHeader({ onSidebarToggle }) {
 
         <div className="flex items-center space-x-2 sm:space-x-4">
           {/* Notifications */}
-          <button className="p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-lg transition-colors">
-            <Bell className="w-6 h-6" />
-          </button>
+          <div className="relative">
+            <button
+              className="p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-lg transition-colors"
+              onClick={() => setShowNotifications((prev) => !prev)}
+              aria-label="Show notifications"
+            >
+              <Bell className="w-6 h-6" />
+            </button>
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-secondary-200 py-4 z-50 text-center">
+                <p className="text-secondary-700 text-sm">No notifications yet.</p>
+              </div>
+            )}
+          </div>
 
           {/* User Menu */}
           <div className="relative">
