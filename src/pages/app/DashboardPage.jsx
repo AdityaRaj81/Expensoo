@@ -13,108 +13,110 @@ function DashboardPage() {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="card">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-heading font-bold text-secondary-900 mb-2">
+            <h2 className="text-xl sm:text-2xl font-heading font-bold text-secondary-900 mb-2">
               Welcome back! 👋
             </h2>
             <p className="text-secondary-600">
               Here's what's happening with your finances today.
             </p>
           </div>
-          <Link to="/app/transactions/add" className="btn btn-primary">
+          <Link to="/app/transactions/add" className="btn btn-primary w-full sm:w-auto flex items-center justify-center">
             <Plus className="w-5 h-5 mr-2" />
-            Add Transaction
+            <span className="hidden xs:inline">Add Transaction</span>
+            <span className="inline xs:hidden">Add</span>
           </Link>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="dashboard-card rounded-xl p-6 text-center">
+      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+        <div className="dashboard-card rounded-xl p-4 sm:p-6 text-center">
           <div className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <TrendingUp className="w-6 h-6 text-white" />
           </div>
-          <h3 className="text-sm font-medium text-secondary-600 mb-2 uppercase tracking-wide">
+          <h3 className="text-xs sm:text-sm font-medium text-secondary-600 mb-2 uppercase tracking-wide">
             Total Income
           </h3>
-          <p className="text-3xl font-bold text-accent-600 mb-0">
+          <p className="text-2xl sm:text-3xl font-bold text-accent-600 mb-0">
             ₹{totalIncome.toLocaleString()}
           </p>
-          <p className="text-sm text-secondary-500">This month</p>
+          <p className="text-xs sm:text-sm text-secondary-500">This month</p>
         </div>
-        
-        <div className="dashboard-card rounded-xl p-6 text-center">
+        <div className="dashboard-card rounded-xl p-4 sm:p-6 text-center">
           <div className="w-12 h-12 bg-gradient-to-br from-danger-500 to-danger-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <TrendingDown className="w-6 h-6 text-white" />
           </div>
-          <h3 className="text-sm font-medium text-secondary-600 mb-2 uppercase tracking-wide">
+          <h3 className="text-xs sm:text-sm font-medium text-secondary-600 mb-2 uppercase tracking-wide">
             Total Expenses
           </h3>
-          <p className="text-3xl font-bold text-danger-600 mb-0">
+          <p className="text-2xl sm:text-3xl font-bold text-danger-600 mb-0">
             ₹{totalExpenses.toLocaleString()}
           </p>
-          <p className="text-sm text-secondary-500">This month</p>
+          <p className="text-xs sm:text-sm text-secondary-500">This month</p>
         </div>
-        
-        <div className="dashboard-card rounded-xl p-6 text-center">
+        <div className="dashboard-card rounded-xl p-4 sm:p-6 text-center">
           <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <DollarSign className="w-6 h-6 text-white" />
           </div>
-          <h3 className="text-sm font-medium text-secondary-600 mb-2 uppercase tracking-wide">
+          <h3 className="text-xs sm:text-sm font-medium text-secondary-600 mb-2 uppercase tracking-wide">
             Current Balance
           </h3>
-          <p className={`text-3xl font-bold mb-0 ${currentBalance >= 0 ? 'text-primary-600' : 'text-danger-600'}`}>
+          <p className={`text-2xl sm:text-3xl font-bold mb-0 ${currentBalance >= 0 ? 'text-primary-600' : 'text-danger-600'}`}>
             ₹{currentBalance.toLocaleString()}
           </p>
-          <p className="text-sm text-secondary-500">Available</p>
+          <p className="text-xs sm:text-sm text-secondary-500">Available</p>
         </div>
       </div>
-      
+
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="lg:col-span-2">
-          <ExpenseBarChart />
+          <div className="bg-white rounded-xl p-2 sm:p-4 h-full flex flex-col">
+            <ExpenseBarChart />
+          </div>
         </div>
         <div className="lg:col-span-1">
-          <CategoryPieChart />
+          <div className="bg-white rounded-xl p-2 sm:p-4 h-full flex flex-col">
+            <CategoryPieChart />
+          </div>
         </div>
       </div>
-      
+
       {/* Recent Transactions */}
       <div className="card">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-heading font-semibold text-secondary-900">
+        <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 mb-6">
+          <h3 className="text-lg sm:text-xl font-heading font-semibold text-secondary-900">
             Recent Transactions
           </h3>
-          <Link to="/app/transactions" className="text-primary-600 hover:text-primary-700 font-medium">
+          <Link to="/app/transactions" className="text-primary-600 hover:text-primary-700 font-medium text-sm xs:text-base">
             View All
           </Link>
         </div>
-        
+
         {transactions.length === 0 ? (
-          <div className="empty-state-illustration rounded-xl p-12 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary-100 to-accent-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CreditCard className="w-10 h-10 text-primary-600" />
+          <div className="empty-state-illustration rounded-xl p-6 sm:p-12 text-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary-100 to-accent-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <CreditCard className="w-8 h-8 sm:w-10 sm:h-10 text-primary-600" />
             </div>
-            <h3 className="text-xl font-heading font-semibold text-secondary-900 mb-3">
+            <h3 className="text-lg sm:text-xl font-heading font-semibold text-secondary-900 mb-2 sm:mb-3">
               No transactions yet
             </h3>
-            <p className="text-secondary-600 mb-6 max-w-md mx-auto">
+            <p className="text-secondary-600 mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
               Start tracking your expenses by adding your first transaction. It only takes a few seconds!
             </p>
-            <Link to="/app/transactions/add" className="btn btn-primary">
+            <Link to="/app/transactions/add" className="btn btn-primary w-full xs:w-auto">
               Add Your First Transaction
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {transactions.slice(0, 5).map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between p-4 bg-secondary-50 rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    transaction.type === 'income' ? 'bg-accent-100' : 'bg-danger-100'
-                  }`}>
+              <div key={transaction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 sm:p-4 bg-secondary-50 rounded-lg">
+                <div className="flex items-center space-x-3 sm:space-x-4">
+                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${transaction.type === 'income' ? 'bg-accent-100' : 'bg-danger-100'
+                    }`}>
                     {transaction.type === 'income' ? (
                       <TrendingUp className={`w-5 h-5 text-accent-600`} />
                     ) : (
@@ -122,17 +124,16 @@ function DashboardPage() {
                     )}
                   </div>
                   <div>
-                    <p className="font-medium text-secondary-900">{transaction.description}</p>
-                    <p className="text-sm text-secondary-600">{transaction.category}</p>
+                    <p className="font-medium text-secondary-900 text-sm sm:text-base">{transaction.description}</p>
+                    <p className="text-xs sm:text-sm text-secondary-600">{transaction.category}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`font-semibold ${
-                    transaction.type === 'income' ? 'text-accent-600' : 'text-danger-600'
-                  }`}>
+                  <p className={`font-semibold text-sm sm:text-base ${transaction.type === 'income' ? 'text-accent-600' : 'text-danger-600'
+                    }`}>
                     {transaction.type === 'income' ? '+' : '-'}₹{transaction.amount.toLocaleString()}
                   </p>
-                  <p className="text-sm text-secondary-600">{transaction.date}</p>
+                  <p className="text-xs sm:text-sm text-secondary-600">{transaction.date}</p>
                 </div>
               </div>
             ))}
