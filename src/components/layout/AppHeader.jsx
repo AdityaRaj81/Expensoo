@@ -1,11 +1,11 @@
 import { useLocation, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Bell, ChevronDown } from 'lucide-react';
+import { Bell, ChevronDown, Menu } from 'lucide-react';
 
-function AppHeader() {
+function AppHeader({ onSidebarToggle }) {
   const location = useLocation();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  
+
   const getPageTitle = () => {
     switch (location.pathname) {
       case '/app':
@@ -29,33 +29,43 @@ function AppHeader() {
         return 'Dashboard';
     }
   };
-  
+
   return (
-    <header className="bg-white border-b border-secondary-200 px-6 py-4 ml-72">
+    <header className="bg-white border-b border-secondary-200 px-4 sm:px-6 py-4 ml-0 sm:ml-72 sticky top-0 z-30">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-heading font-bold text-secondary-900">
-          {getPageTitle()}
-        </h1>
-        
-        <div className="flex items-center space-x-4">
+        {/* Mobile menu button */}
+        <div className="flex items-center">
+          <button
+            className="sm:hidden mr-2 p-2 rounded-lg hover:bg-secondary-100 transition-colors focus:outline-none"
+            onClick={onSidebarToggle}
+            aria-label="Open sidebar"
+          >
+            <Menu className="w-6 h-6 text-secondary-900" />
+          </button>
+          <h1 className="text-xl sm:text-2xl font-heading font-bold text-secondary-900">
+            {getPageTitle()}
+          </h1>
+        </div>
+
+        <div className="flex items-center space-x-2 sm:space-x-4">
           {/* Notifications */}
           <button className="p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-lg transition-colors">
             <Bell className="w-6 h-6" />
           </button>
-          
+
           {/* User Menu */}
           <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-secondary-100 transition-colors"
+              className="flex items-center space-x-2 sm:space-x-3 p-2 rounded-lg hover:bg-secondary-100 transition-colors"
             >
               <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-accent-600 rounded-full flex items-center justify-center text-white font-semibold">
                 U
               </div>
-              <span className="font-medium text-secondary-900">User</span>
+              <span className="hidden sm:inline font-medium text-secondary-900">User</span>
               <ChevronDown className="w-4 h-4 text-secondary-600" />
             </button>
-            
+
             {showUserMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-secondary-200 py-2 z-50">
                 <Link
@@ -63,7 +73,8 @@ function AppHeader() {
                   className="flex items-center px-4 py-2 text-secondary-700 hover:bg-secondary-100 transition-colors"
                   onClick={() => setShowUserMenu(false)}
                 >
-                  <User className="w-4 h-4 mr-3" />
+                  {/* User icon hidden on mobile for less clutter */}
+                  <span className="hidden sm:inline-block mr-3"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg></span>
                   Profile
                 </Link>
                 <Link
@@ -71,7 +82,7 @@ function AppHeader() {
                   className="flex items-center px-4 py-2 text-secondary-700 hover:bg-secondary-100 transition-colors"
                   onClick={() => setShowUserMenu(false)}
                 >
-                  <Settings className="w-4 h-4 mr-3" />
+                  <span className="hidden sm:inline-block mr-3"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" /></svg></span>
                   Settings
                 </Link>
                 <hr className="my-2 border-secondary-200" />
