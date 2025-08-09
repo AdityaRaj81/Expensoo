@@ -32,7 +32,7 @@ function AppHeader({ onSidebarToggle }) {
   };
 
   return (
-    <header className="bg-white border-b border-secondary-200 px-4 sm:px-6 py-4 sticky top-0 z-30 w-full">
+    <header className="bg-white border-b border-secondary-200 px-4 sm:px-6 py-4 w-full sticky top-0 z-30 sm:static sm:top-auto">
       <div className="flex justify-between items-center">
         {/* Mobile menu button */}
         <div className="flex items-center">
