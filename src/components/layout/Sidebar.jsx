@@ -21,7 +21,7 @@ function Sidebar({ isOpen, onClose }) {
     { path: '/app/profile', label: 'Profile', icon: User }
   ];
 
-  // Responsive sidebar: show as overlay on mobile, fixed on desktop
+  // Responsive sidebar: overlay on mobile, styled and shadowed on desktop/laptop
   return (
     <>
       {/* Overlay for mobile */}
@@ -31,12 +31,15 @@ function Sidebar({ isOpen, onClose }) {
         aria-hidden="true"
       />
       <aside
-        className={`app-sidebar fixed left-0 top-0 h-full z-50 border-r border-secondary-200 w-72 bg-white transition-transform duration-200
+        className={`app-sidebar fixed left-0 top-0 h-full z-50 border-r border-secondary-200 w-64 sm:w-72 bg-white transition-transform duration-200
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          sm:translate-x-0 sm:static sm:block`}
+          sm:translate-x-0 sm:static sm:block
+          shadow-none sm:shadow-xl
+          sm:rounded-none
+        `}
         style={{ maxWidth: '100vw' }}
       >
-        <div className="p-6">
+        <div className="p-4 sm:p-6 flex flex-col h-full">
           {/* Close button for mobile */}
           <button
             className="sm:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-secondary-100 transition-colors"
@@ -54,28 +57,32 @@ function Sidebar({ isOpen, onClose }) {
             </span>
           </Link>
 
-          <nav>
-            <ul className="space-y-2">
+          <nav className="flex-1">
+            <ul className="space-y-1 sm:space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.path}>
                     <Link
                       to={item.path}
-                      className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${location.pathname === item.path
-                          ? 'bg-primary-600 text-white shadow-lg'
-                          : 'text-secondary-600 hover:bg-secondary-100 hover:text-secondary-900'
+                      className={`flex items-center space-x-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 ${location.pathname === item.path
+                        ? 'bg-primary-600 text-white shadow-md sm:shadow-lg'
+                        : 'text-secondary-600 hover:bg-secondary-100 hover:text-secondary-900'
                         }`}
                       onClick={onClose}
                     >
                       <Icon className="w-5 h-5" />
-                      <span>{item.label}</span>
+                      <span className="truncate">{item.label}</span>
                     </Link>
                   </li>
                 );
               })}
             </ul>
           </nav>
+          {/* Optional: Add a footer or help link for desktop */}
+          <div className="hidden sm:block mt-auto pt-8 text-xs text-secondary-400 text-center">
+            &copy; {new Date().getFullYear()} Expensoo
+          </div>
         </div>
       </aside>
     </>
