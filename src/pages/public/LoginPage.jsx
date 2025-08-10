@@ -5,39 +5,49 @@ import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import { loginSuccess } from '../../store/slices/authSlice';
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm();
-  
+
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock successful login
-      dispatch(loginSuccess({
-        id: 1,
-        email: data.email,
-        name: 'John Doe'
-      }));
-      
+      // Call backend login API
+      const response = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Login failed. Please try again.');
+      }
+
+      const user = await response.json();
+      // You may need to adjust this depending on your backend's response structure
+      dispatch(loginSuccess(user));
       toast.success('Welcome back!');
       navigate('/app');
     } catch (error) {
-      toast.error('Login failed. Please try again.');
+      toast.error(error.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-secondary-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
@@ -52,7 +62,7 @@ function LoginPage() {
             <h1 className="text-3xl font-heading font-bold text-secondary-900 mb-2">Welcome Back</h1>
             <p className="text-secondary-600">Sign in to your account to continue</p>
           </div>
-          
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label htmlFor="email" className="form-label">Email Address</label>
@@ -73,7 +83,7 @@ function LoginPage() {
                 <p className="mt-1 text-sm text-danger-600">{errors.email.message}</p>
               )}
             </div>
-            
+
             <div>
               <label htmlFor="password" className="form-label">Password</label>
               <input
@@ -93,16 +103,16 @@ function LoginPage() {
                 <p className="mt-1 text-sm text-danger-600">{errors.password.message}</p>
               )}
             </div>
-            
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               className="btn btn-primary w-full"
               disabled={isLoading}
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
-          
+
           <div className="mt-6 text-center space-y-4">
             <p>
               <Link to="/forgot-password" className="text-primary-600 hover:text-primary-700 font-medium">
