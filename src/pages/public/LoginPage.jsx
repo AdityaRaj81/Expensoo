@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
-import { loginSuccess } from '../../store/slices/authSlice';
-
-const BASE_URL = import.meta.env.VITE_API_URL;
+import { Eye, EyeOff } from 'lucide-react';
+import { loginUser, clearError } from '../../store/slices/authSlice';
 
 function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const { loading, error } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -18,49 +20,53 @@ function LoginPage() {
     formState: { errors }
   } = useForm();
 
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
   const onSubmit = async (data) => {
-    setIsLoading(true);
     try {
-      // Call backend login API
-      const response = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const response = await dispatch(
+        loginUser({
           email: data.email,
-          password: data.password
+          password: data.password,
+          rememberMe
         })
-      });
+      ).unwrap();
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Login failed. Please try again.');
-      }
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
 
-      const user = await response.json();
-      // You may need to adjust this depending on your backend's response structure
-      dispatch(loginSuccess(user));
       toast.success('Welcome back!');
       navigate('/app');
-    } catch (error) {
-      toast.error(error.message || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+    } catch {
+      toast.error('Login failed');
     }
   };
 
   return (
-    <div className="min-h-screen bg-secondary-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center px-2 sm:px-4">
       <div className="max-w-md w-full">
-        <div className="card">
+        <div className="card p-4 sm:p-8 rounded-2xl shadow-xl">
           <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center space-x-2 mb-6">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-accent-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">E</span>
-              </div>
-              <span className="text-2xl font-heading font-bold gradient-text">Expensoo</span>
+            <Link to="/" className="inline-flex flex-col items-center mb-6">
+              <img
+                src="public/logo_icon.png"
+                alt="Expensoo Logo"
+                className="w-20 h-20 mb-2 object-contain drop-shadow-lg"
+              />
+              <span className="text-2xl font-heading font-bold gradient-text tracking-wide">Expensoo</span>
             </Link>
-            <h1 className="text-3xl font-heading font-bold text-secondary-900 mb-2">Welcome Back</h1>
-            <p className="text-secondary-600">Sign in to your account to continue</p>
+            <h1 className="text-2xl sm:text-3xl font-heading font-bold text-blue-900 mb-2">
+              Welcome Back 👋
+            </h1>
+            <p className="text-blue-600 text-sm sm:text-base">
+              Sign in to continue managing your expenses
+            </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -69,8 +75,9 @@ function LoginPage() {
               <input
                 type="email"
                 id="email"
-                className={`form-input ${errors.email ? 'border-danger-500' : ''}`}
+                className={`form-input w-full ${errors.email ? 'border-red-400' : ''}`}
                 placeholder="Enter your email"
+                autoComplete="email"
                 {...register('email', {
                   required: 'Email is required',
                   pattern: {
@@ -80,17 +87,18 @@ function LoginPage() {
                 })}
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-danger-600">{errors.email.message}</p>
+                <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
               )}
             </div>
 
-            <div>
+            <div className="relative">
               <label htmlFor="password" className="form-label">Password</label>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
-                className={`form-input ${errors.password ? 'border-danger-500' : ''}`}
+                className={`form-input w-full pr-12 ${errors.password ? 'border-red-400' : ''}`}
                 placeholder="Enter your password"
+                autoComplete="current-password"
                 {...register('password', {
                   required: 'Password is required',
                   minLength: {
@@ -99,36 +107,112 @@ function LoginPage() {
                   }
                 })}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/5 flex items-center text-gray-400 hover:text-blue-600"
+                tabIndex={-1}
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                style={{ height: '2rem', width: '2rem' }}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
               {errors.password && (
-                <p className="mt-1 text-sm text-danger-600">{errors.password.message}</p>
+                <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
               )}
+
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="form-checkbox mr-2 accent-blue-600"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe((v) => !v)}
+                />
+                Remember me
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+              >
+                Forgot password?
+              </Link>
             </div>
 
             <button
               type="submit"
-              className="btn btn-primary w-full"
-              disabled={isLoading}
+              className="btn btn-primary w-full py-3 rounded-xl text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+              disabled={loading}
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
           <div className="mt-6 text-center space-y-4">
-            <p>
-              <Link to="/forgot-password" className="text-primary-600 hover:text-primary-700 font-medium">
-                Forgot your password?
-              </Link>
-            </p>
-            <p className="text-secondary-600">
+            <p className="text-blue-600 text-sm">
               Don't have an account?{' '}
-              <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+              <Link
+                to="/register"
+                className="text-purple-600 hover:text-purple-800 font-medium"
+              >
                 Sign up here
               </Link>
             </p>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+      <style>{`
+        .card {
+          background: #fff;
+        }
+        @media (max-width: 640px) {
+          .card {
+            padding: 1rem;
+            border-radius: 1.25rem;
+          }
+          .form-input {
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+          }
+          .w-20 {
+            width: 5rem !important;
+            height: 5rem !important;
+          }
+        }
+        .gradient-text {
+          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .form-input {
+          border-radius: 0.75rem;
+          border: 1px solid #e5e7eb;
+          background: #f9fafb;
+          transition: border 0.2s;
+        }
+        .form-input:focus {
+          border-color: #3b82f6;
+          outline: none;
+        }
+        .form-label {
+          font-size: 1rem;
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.5rem;
+          display: block;
+        }
+        .btn-primary {
+          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+          color: #fff;
+          border: none;
+        }
+        .btn-primary:disabled {
+          opacity: 0.7;
+        }
+      `}</style>
+    </div >
   );
 }
 
