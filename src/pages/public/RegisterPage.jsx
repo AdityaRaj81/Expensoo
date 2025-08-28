@@ -10,8 +10,8 @@ import logo from '../../assets/Logo_icon.png';
 function RegisterPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword] = useState(false);
+  const [showConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
   const { loading, error } = useSelector((state) => state.auth);
@@ -159,16 +159,7 @@ function RegisterPage() {
                   }
                 })}
               />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/5 flex items-center text-gray-400 hover:text-blue-600"
-                tabIndex={-1}
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                style={{ height: '2rem', width: '2rem' }}
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+
               {errors.password && (
                 <p className="mt-1 text-xs text-red-500 flex items-center">
                   <span className="mr-1">⚠️</span>
@@ -207,16 +198,7 @@ function RegisterPage() {
                   validate: (value) => value === watchPassword || 'Passwords do not match'
                 })}
               />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/5 flex items-center text-gray-400 hover:text-blue-600"
-                tabIndex={-1}
-                onClick={() => setShowConfirmPassword((v) => !v)}
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                style={{ height: '2rem', width: '2rem' }}
-              >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+
               {errors.confirmPassword && (
                 <p className="mt-1 text-xs text-red-500 flex items-center">
                   <span className="mr-1">⚠️</span>
