@@ -33,6 +33,7 @@ function RegisterPage() {
     if (error) toast.error(error);
   }, [error]);
 
+  // ✅ Updated to match backend logic from 1st file
   const onSubmit = async (data) => {
     if (!acceptTerms) {
       toast.error('Please accept the terms and conditions');
@@ -40,21 +41,19 @@ function RegisterPage() {
     }
 
     try {
-      const response = await dispatch(
+      // Pass same fields as old working SignupPage
+      await dispatch(
         registerUser({
-          fullName: data.fullName,
+          name: data.fullName, // ✅ backend expects "name"
           email: data.email,
           password: data.password
         })
       ).unwrap();
 
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-
       toast.success('Account created successfully! 🎉');
-      navigate('/app');
+      navigate('/dashboard'); // ✅ match old logic
     } catch {
-      toast.error('Registration failed');
+      // Error handled in slice
     }
   };
 
