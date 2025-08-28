@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Mail, Lock, CheckCircle } from 'lucide-react';
-import { loginUser, clearError } from '../../store/slices/authSlice';
-import logo from '../../assets/Logo_icon.png';
+import { loginUser, clearError } from '../store/slices/authSlice';
+import logo from '../assets/Logo_icon.png';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -21,29 +21,26 @@ function LoginPage() {
     formState: { errors }
   } = useForm();
 
+  // ✅ clear errors when component mounts
   useEffect(() => {
     dispatch(clearError());
   }, [dispatch]);
 
+  // ✅ show toast on error
   useEffect(() => {
     if (error) toast.error(error);
   }, [error]);
 
+  // ✅ main login submit (backend connection logic from 1st)
   const onSubmit = async (data) => {
     try {
-      const response = await dispatch(
-        loginUser({
-          email: data.email,
-          password: data.password,
-          rememberMe
-        })
-      ).unwrap();
+      const response = await dispatch(loginUser(data)).unwrap();
 
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
 
       toast.success('Welcome back! 🎉');
-      navigate('/app');
+      navigate('/app'); // kept from 1st file (correct path)
     } catch {
       toast.error('Login failed');
     }
@@ -53,6 +50,7 @@ function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center px-2 sm:px-4">
       <div className="max-w-md w-full">
         <div className="card p-4 sm:p-8 rounded-2xl shadow-xl">
+          {/* ✅ Header with Logo */}
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex flex-col items-center mb-6">
               <div className="relative">
@@ -63,7 +61,9 @@ function LoginPage() {
                 />
                 <div className="absolute -inset-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-lg"></div>
               </div>
-              <span className="text-2xl font-heading font-bold gradient-text tracking-wide">Expensoo</span>
+              <span className="text-2xl font-heading font-bold gradient-text tracking-wide">
+                Expensoo
+              </span>
             </Link>
             <h1 className="text-2xl sm:text-3xl font-heading font-bold text-blue-900 mb-2">
               Welcome Back! 👋
@@ -73,6 +73,7 @@ function LoginPage() {
             </p>
           </div>
 
+          {/* ✅ Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Email Field */}
             <div>
@@ -181,6 +182,7 @@ function LoginPage() {
             </button>
           </form>
 
+          {/* Footer */}
           <div className="mt-6 text-center space-y-4">
             <p className="text-blue-600 text-sm">
               Don't have an account?{' '}
@@ -192,7 +194,6 @@ function LoginPage() {
               </Link>
             </p>
 
-            {/* Trust Indicators */}
             <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 mt-4">
               <span className="flex items-center">
                 <Lock className="w-3 h-3 mr-1" />
@@ -202,14 +203,13 @@ function LoginPage() {
                 <CheckCircle className="w-3 h-3 mr-1" />
                 Trusted
               </span>
-              <span className="flex items-center">
-                ⚡ Fast Login
-              </span>
+              <span className="flex items-center">⚡ Fast Login</span>
             </div>
           </div>
         </div>
       </div>
 
+      {/* ✅ Custom Styles */}
       <style>{`
         .card {
           background: #fff;
@@ -236,12 +236,10 @@ function LoginPage() {
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
-
         @keyframes gradient-shift {
           0%, 100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
         }
-
         .form-input {
           padding: 0.875rem 1rem;
           border: 2px solid #e5e7eb;
@@ -251,18 +249,15 @@ function LoginPage() {
           transition: all 0.3s ease;
           width: 100%;
         }
-
         .form-input:focus {
           border-color: #3b82f6;
           background: #ffffff;
           outline: none;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-
         .form-input::placeholder {
           color: #9ca3af;
         }
-
         .form-label {
           display: block;
           font-size: 0.875rem;
@@ -270,7 +265,6 @@ function LoginPage() {
           color: #374151;
           margin-bottom: 0.5rem;
         }
-
         .btn-primary {
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           color: white;
@@ -278,25 +272,18 @@ function LoginPage() {
           font-weight: 600;
           transition: all 0.3s ease;
         }
-
         .btn-primary:hover:not(:disabled) {
           background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
         }
-
         .btn-primary:disabled {
           opacity: 0.7;
           cursor: not-allowed;
         }
-
-        /* Loading animation */
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
         .animate-spin {
           animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>
