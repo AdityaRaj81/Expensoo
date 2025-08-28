@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { loginUser, clearError } from '../../store/slices/authSlice';
+import logo from '../../assets/Logo_icon.png';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ function LoginPage() {
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex flex-col items-center mb-6">
               <img
-                src="public/logo_icon.png"
+                src={logo}
                 alt="Expensoo Logo"
                 className="w-20 h-20 mb-2 object-contain drop-shadow-lg"
               />
