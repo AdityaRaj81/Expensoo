@@ -10,7 +10,7 @@ import logo from '../../assets/Logo_icon.png';
 function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   const { loading, error } = useSelector((state) => state.auth);
@@ -123,15 +123,7 @@ function LoginPage() {
                   }
                 })}
               />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-md hover:bg-gray-100"
-                tabIndex={-1}
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+
               {errors.password && (
                 <p className="mt-1 text-xs text-red-500 flex items-center">
                   <span className="mr-1">⚠️</span>
