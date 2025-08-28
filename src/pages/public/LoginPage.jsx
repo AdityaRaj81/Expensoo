@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Mail, Lock, CheckCircle } from 'lucide-react';
-import { loginUser, clearError } from '../store/slices/authSlice';
-import logo from '../assets/Logo_icon.png';
+import { loginUser, clearError } from '../../store/slices/authSlice';
+import logo from '../../assets/Logo_icon.png';
 
 function LoginPage() {
   const navigate = useNavigate();
