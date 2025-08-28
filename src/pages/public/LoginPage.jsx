@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, CheckCircle } from 'lucide-react';
 import { loginUser, clearError } from '../../store/slices/authSlice';
 import logo from '../../assets/Logo_icon.png';
 
@@ -42,7 +42,7 @@ function LoginPage() {
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
 
-      toast.success('Welcome back!');
+      toast.success('Welcome back! 🎉');
       navigate('/app');
     } catch {
       toast.error('Login failed');
@@ -55,15 +55,18 @@ function LoginPage() {
         <div className="card p-4 sm:p-8 rounded-2xl shadow-xl">
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex flex-col items-center mb-6">
-              <img
-                src={logo}
-                alt="Expensoo Logo"
-                className="w-20 h-20 mb-2 object-contain drop-shadow-lg"
-              />
+              <div className="relative">
+                <img
+                  src={logo}
+                  alt="Expensoo Logo"
+                  className="w-20 h-20 mb-2 object-contain drop-shadow-lg"
+                />
+                <div className="absolute -inset-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-lg"></div>
+              </div>
               <span className="text-2xl font-heading font-bold gradient-text tracking-wide">Expensoo</span>
             </Link>
             <h1 className="text-2xl sm:text-3xl font-heading font-bold text-blue-900 mb-2">
-              Welcome Back 👋
+              Welcome Back! 👋
             </h1>
             <p className="text-blue-600 text-sm sm:text-base">
               Sign in to continue managing your expenses
@@ -71,8 +74,12 @@ function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Email Field */}
             <div>
-              <label htmlFor="email" className="form-label">Email Address</label>
+              <label htmlFor="email" className="form-label">
+                <Mail className="inline w-4 h-4 mr-1" />
+                Email Address
+              </label>
               <input
                 type="email"
                 id="email"
@@ -88,12 +95,19 @@ function LoginPage() {
                 })}
               />
               {errors.email && (
-                <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+                <p className="mt-1 text-xs text-red-500 flex items-center">
+                  <span className="mr-1">⚠️</span>
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
+            {/* Password Field */}
             <div className="relative">
-              <label htmlFor="password" className="form-label">Password</label>
+              <label htmlFor="password" className="form-label">
+                <Lock className="inline w-4 h-4 mr-1" />
+                Password
+              </label>
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
@@ -110,44 +124,60 @@ function LoginPage() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/5 flex items-center text-gray-400 hover:text-blue-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-md hover:bg-gray-100"
                 tabIndex={-1}
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                style={{ height: '2rem', width: '2rem' }}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
               {errors.password && (
-                <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+                <p className="mt-1 text-xs text-red-500 flex items-center">
+                  <span className="mr-1">⚠️</span>
+                  {errors.password.message}
+                </p>
               )}
-
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center text-sm cursor-pointer">
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  className="form-checkbox mr-2 accent-blue-600"
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2"
                   checked={rememberMe}
                   onChange={() => setRememberMe((v) => !v)}
                 />
-                Remember me
+                <span className="text-gray-600">Remember me</span>
               </label>
               <Link
                 to="/forgot-password"
-                className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                className="text-blue-600 hover:text-blue-800 font-medium"
               >
                 Forgot password?
               </Link>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-primary w-full py-3 rounded-xl text-base font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+              className="btn-primary w-full py-3 rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               disabled={loading}
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Signing In...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Sign In
+                </span>
+              )}
             </button>
           </form>
 
@@ -161,9 +191,25 @@ function LoginPage() {
                 Sign up here
               </Link>
             </p>
+
+            {/* Trust Indicators */}
+            <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 mt-4">
+              <span className="flex items-center">
+                <Lock className="w-3 h-3 mr-1" />
+                Secure
+              </span>
+              <span className="flex items-center">
+                <CheckCircle className="w-3 h-3 mr-1" />
+                Trusted
+              </span>
+              <span className="flex items-center">
+                ⚡ Fast Login
+              </span>
+            </div>
           </div>
         </div>
-      </div >
+      </div>
+
       <style>{`
         .card {
           background: #fff;
@@ -183,37 +229,77 @@ function LoginPage() {
           }
         }
         .gradient-text {
-          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #3b82f6 100%);
+          background-size: 200% 200%;
+          animation: gradient-shift 3s ease infinite;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
+
+        @keyframes gradient-shift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+
         .form-input {
+          padding: 0.875rem 1rem;
+          border: 2px solid #e5e7eb;
           border-radius: 0.75rem;
-          border: 1px solid #e5e7eb;
           background: #f9fafb;
-          transition: border 0.2s;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+          width: 100%;
         }
+
         .form-input:focus {
           border-color: #3b82f6;
+          background: #ffffff;
           outline: none;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
+
+        .form-input::placeholder {
+          color: #9ca3af;
+        }
+
         .form-label {
-          font-size: 1rem;
-          font-weight: 500;
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 600;
           color: #374151;
           margin-bottom: 0.5rem;
-          display: block;
         }
+
         .btn-primary {
-          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-          color: #fff;
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          color: white;
           border: none;
+          font-weight: 600;
+          transition: all 0.3s ease;
         }
+
+        .btn-primary:hover:not(:disabled) {
+          background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        }
+
         .btn-primary:disabled {
           opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        /* Loading animation */
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .animate-spin {
+          animation: spin 1s linear infinite;
         }
       `}</style>
-    </div >
+    </div>
   );
 }
 
