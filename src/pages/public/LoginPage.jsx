@@ -40,7 +40,7 @@ function LoginPage() {
       localStorage.setItem('user', JSON.stringify(response.user));
 
       toast.success('Welcome back! 🎉');
-      navigate('/app'); // kept from 1st file (correct path)
+      navigate('/dashboard'); // kept from 1st file (correct path)
     } catch {
       toast.error('Login failed');
     }
