@@ -51,7 +51,7 @@ function RegisterPage() {
       ).unwrap();
 
       toast.success('Account created successfully! 🎉');
-      navigate('/dashboard'); // ✅ match old logic
+      navigate('/app'); // ✅ match old logic
     } catch {
       // Error handled in slice
     }
