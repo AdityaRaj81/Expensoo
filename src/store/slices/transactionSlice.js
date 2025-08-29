@@ -1,147 +1,180 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import transactionService from '../../services/transactionService'
+import api from '../../services/api'
+
+// Async thunks
+export const fetchTransactions = createAsyncThunk(
+  'transactions/fetchTransactions',
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await transactionService.getTransactions(params)
+      return response
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch transactions')
+    }
+  }
+)
+
+export const createTransaction = createAsyncThunk(
+  'transactions/createTransaction',
+  async (transactionData, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/transactions/add', transactionData)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to create transaction')
+    }
+  }
+)
+
+export const updateTransaction = createAsyncThunk(
+  'transactions/updateTransaction',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await transactionService.updateTransaction(id, data)
+      return response
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update transaction')
+    }
+  }
+)
+
+export const deleteTransaction = createAsyncThunk(
+  'transactions/deleteTransaction',
+  async (id, { rejectWithValue }) => {
+    try {
+      await transactionService.deleteTransaction(id)
+      return id
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete transaction')
+    }
+  }
+)
+
+export const fetchDashboardData = createAsyncThunk(
+  'transactions/fetchDashboardData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await transactionService.getDashboardData()
+      return response
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch dashboard data')
+    }
+  }
+)
 
 const initialState = {
   transactions: [],
-  loading: false,
-  error: null,
-  totalIncome: 0,
-  totalExpenses: 0,
-  currentBalance: 0,
   dashboardData: {
     totalIncome: 0,
     totalExpenses: 0,
     balance: 0,
     recentTransactions: [],
     monthlyData: [],
-    categoryData: []
-  }
-};
-
-// ✅ Async thunk for dashboard data
-export const fetchDashboardData = createAsyncThunk(
-  'transactions/fetchDashboardData',
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await transactionService.getDashboardData()
-      return data
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch dashboard data')
-    }
-  }
-)
-
-// const transactionSlice = createSlice({
-//   name: 'transactions',
-//   initialState,
-//   reducers: {
-//     setLoading: (state, action) => {
-//       state.loading = action.payload
-//     },
-//     setTransactions: (state, action) => {
-//       state.transactions = action.payload
-//       // Calculate totals
-//       const income = action.payload
-//         .filter(t => t.type === 'income')
-//         .reduce((sum, t) => sum + t.amount, 0)
-//       const expenses = action.payload
-//         .filter(t => t.type === 'expense')
-//         .reduce((sum, t) => sum + t.amount, 0)
-
-//       state.totalIncome = income
-//       state.totalExpenses = expenses
-//       state.currentBalance = income - expenses
-//     },
-//     addTransaction: (state, action) => {
-//       state.transactions.unshift(action.payload)
-//       // Recalculate totals
-//       const income = state.transactions
-//         .filter(t => t.type === 'income')
-//         .reduce((sum, t) => sum + t.amount, 0)
-//       const expenses = state.transactions
-//         .filter(t => t.type === 'expense')
-//         .reduce((sum, t) => sum + t.amount, 0)
-
-//       state.totalIncome = income
-//       state.totalExpenses = expenses
-//       state.currentBalance = income - expenses
-//     },
-//     updateTransaction: (state, action) => {
-//       const index = state.transactions.findIndex(t => t.id === action.payload.id)
-//       if (index !== -1) {
-//         state.transactions[index] = action.payload
-//         // Recalculate totals
-//         const income = state.transactions
-//           .filter(t => t.type === 'income')
-//           .reduce((sum, t) => sum + t.amount, 0)
-//         const expenses = state.transactions
-//           .filter(t => t.type === 'expense')
-//           .reduce((sum, t) => sum + t.amount, 0)
-
-//         state.totalIncome = income
-//         state.totalExpenses = expenses
-//         state.currentBalance = income - expenses
-//       }
-//     },
-//     deleteTransaction: (state, action) => {
-//       state.transactions = state.transactions.filter(t => t.id !== action.payload)
-//       // Recalculate totals
-//       const income = state.transactions
-//         .filter(t => t.type === 'income')
-//         .reduce((sum, t) => sum + t.amount, 0)
-//       const expenses = state.transactions
-//         .filter(t => t.type === 'expense')
-//         .reduce((sum, t) => sum + t.amount, 0)
-
-//       state.totalIncome = income
-//       state.totalExpenses = expenses
-//       state.currentBalance = income - expenses
-//     },
-//     setError: (state, action) => {
-//       state.error = action.payload
-//     },
-//     clearError: (state) => {
-//       state.error = null
-//     },
-//   },
-// })
-
+    categoryData: [],
+  },
+  currentTransaction: null,
+  loading: false,
+  error: null,
+  pagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  },
+  filters: {
+    type: '',
+    category: '',
+    dateFrom: '',
+    dateTo: '',
+    search: '',
+  },
+}
 
 const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {
-    setLoading: (state, action) => {
-      state.loading = action.payload
-    },
-    setTransactions: (state, action) => {
-      state.transactions = action.payload
-      calculateTotals(state)
-    },
-    addTransaction: (state, action) => {
-      state.transactions.unshift(action.payload)
-      calculateTotals(state)
-    },
-    updateTransaction: (state, action) => {
-      const index = state.transactions.findIndex(t => t.id === action.payload.id)
-      if (index !== -1) {
-        state.transactions[index] = action.payload
-        calculateTotals(state)
-      }
-    },
-    deleteTransaction: (state, action) => {
-      state.transactions = state.transactions.filter(t => t.id !== action.payload)
-      calculateTotals(state)
-    },
-    setError: (state, action) => {
-      state.error = action.payload
-    },
     clearError: (state) => {
       state.error = null
+    },
+    setFilters: (state, action) => {
+      state.filters = { ...state.filters, ...action.payload }
+    },
+    clearFilters: (state) => {
+      state.filters = {
+        type: '',
+        category: '',
+        dateFrom: '',
+        dateTo: '',
+        search: '',
+      }
+    },
+    setCurrentTransaction: (state, action) => {
+      state.currentTransaction = action.payload
     },
   },
   extraReducers: (builder) => {
     builder
+      // Fetch transactions
+      .addCase(fetchTransactions.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchTransactions.fulfilled, (state, action) => {
+        state.loading = false
+
+        if (!action.payload) {
+          state.transactions = []
+          state.pagination = {
+            page: 1,
+            limit: 10,
+            total: 0,
+            totalPages: 0
+          }
+        } else {
+          state.transactions = action.payload.transactions || []
+          state.pagination = action.payload.pagination || {
+            page: 1,
+            limit: 10,
+            total: 0,
+            totalPages: 0
+          }
+        }
+      })
+      .addCase(fetchTransactions.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+
+      // Create transaction
+      .addCase(createTransaction.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(createTransaction.fulfilled, (state, action) => {
+        state.loading = false
+        state.transactions.unshift(action.payload)
+      })
+      .addCase(createTransaction.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+
+      // Update transaction
+      .addCase(updateTransaction.fulfilled, (state, action) => {
+        const index = state.transactions.findIndex(t => t.id === action.payload.id)
+        if (index !== -1) {
+          state.transactions[index] = action.payload
+        }
+      })
+
+      // Delete transaction
+      .addCase(deleteTransaction.fulfilled, (state, action) => {
+        state.transactions = state.transactions.filter(t => t.id !== action.payload)
+      })
+
+      // Fetch dashboard data
       .addCase(fetchDashboardData.pending, (state) => {
         state.loading = true
         state.error = null
@@ -149,13 +182,6 @@ const transactionSlice = createSlice({
       .addCase(fetchDashboardData.fulfilled, (state, action) => {
         state.loading = false
         state.dashboardData = action.payload
-
-        // ✅ Use backend totals if available
-        if (action.payload?.totalIncome !== undefined) {
-          state.totalIncome = action.payload.totalIncome
-          state.totalExpenses = action.payload.totalExpenses
-          state.currentBalance = action.payload.currentBalance
-        }
       })
       .addCase(fetchDashboardData.rejected, (state, action) => {
         state.loading = false
@@ -164,29 +190,5 @@ const transactionSlice = createSlice({
   },
 })
 
-// ✅ Helper function for totals
-function calculateTotals(state) {
-  const income = state.transactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0)
-
-  const expenses = state.transactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0)
-
-  state.totalIncome = income
-  state.totalExpenses = expenses
-  state.currentBalance = income - expenses
-}
-
-export const {
-  setLoading,
-  setTransactions,
-  addTransaction,
-  updateTransaction,
-  deleteTransaction,
-  setError,
-  clearError,
-} = transactionSlice.actions
-
+export const { clearError, setFilters, clearFilters, setCurrentTransaction } = transactionSlice.actions
 export default transactionSlice.reducer
