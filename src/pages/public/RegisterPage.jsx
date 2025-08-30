@@ -10,8 +10,8 @@ import logo from '../../assets/Logo_icon.png';
 function RegisterPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showPassword] = useState(false);
-  const [showConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
   const { loading, error } = useSelector((state) => state.auth);
@@ -33,7 +33,7 @@ function RegisterPage() {
     if (error) toast.error(error);
   }, [error]);
 
-  // ✅ Updated to match backend logic from 1st file
+  // ✅ Updated to lowercase email + toggle password
   const onSubmit = async (data) => {
     if (!acceptTerms) {
       toast.error('Please accept the terms and conditions');
@@ -41,19 +41,18 @@ function RegisterPage() {
     }
 
     try {
-      // Pass same fields as old working SignupPage
       await dispatch(
         registerUser({
-          name: data.fullName, // ✅ backend expects "name"
-          email: data.email,
+          name: data.fullName,
+          email: data.email.toLowerCase(), // ✅ always lowercase
           password: data.password
         })
       ).unwrap();
 
       toast.success('Account created successfully! 🎉');
-      navigate('/app'); // ✅ match old logic
+      navigate('/app');
     } catch {
-      // Error handled in slice
+      // error handled in slice
     }
   };
 
@@ -68,7 +67,9 @@ function RegisterPage() {
                 alt="Expensoo Logo"
                 className="w-20 h-20 mb-2 object-contain drop-shadow-lg"
               />
-              <span className="text-2xl font-heading font-bold gradient-text tracking-wide">Expensoo</span>
+              <span className="text-2xl font-heading font-bold gradient-text tracking-wide">
+                Expensoo
+              </span>
             </Link>
             <h1 className="text-2xl sm:text-3xl font-heading font-bold text-blue-900 mb-2">
               Create Your Account 🚀
@@ -141,24 +142,38 @@ function RegisterPage() {
                 <Lock className="inline w-4 h-4 mr-1" />
                 Password
               </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                className={`form-input w-full pr-12 ${errors.password ? 'border-red-400' : ''}`}
-                placeholder="Create a strong password"
-                autoComplete="new-password"
-                {...register('password', {
-                  required: 'Password is required',
-                  minLength: {
-                    value: 8,
-                    message: 'Password must be at least 8 characters'
-                  },
-                  pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                    message: 'Password must contain uppercase, lowercase and number'
-                  }
-                })}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  className={`form-input w-full pr-12 ${errors.password ? 'border-red-400' : ''}`}
+                  placeholder="Create a strong password"
+                  autoComplete="new-password"
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: {
+                      value: 8,
+                      message: 'Password must be at least 8 characters'
+                    },
+                    pattern: {
+                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                      message: 'Password must contain uppercase, lowercase and number'
+                    }
+                  })}
+                />
+                {/* 👁 Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
 
               {errors.password && (
                 <p className="mt-1 text-xs text-red-500 flex items-center">
@@ -187,17 +202,31 @@ function RegisterPage() {
                 <Lock className="inline w-4 h-4 mr-1" />
                 Confirm Password
               </label>
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                id="confirmPassword"
-                className={`form-input w-full pr-12 ${errors.confirmPassword ? 'border-red-400' : ''}`}
-                placeholder="Confirm your password"
-                autoComplete="new-password"
-                {...register('confirmPassword', {
-                  required: 'Please confirm your password',
-                  validate: (value) => value === watchPassword || 'Passwords do not match'
-                })}
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  id="confirmPassword"
+                  className={`form-input w-full pr-12 ${errors.confirmPassword ? 'border-red-400' : ''}`}
+                  placeholder="Confirm your password"
+                  autoComplete="new-password"
+                  {...register('confirmPassword', {
+                    required: 'Please confirm your password',
+                    validate: (value) => value === watchPassword || 'Passwords do not match'
+                  })}
+                />
+                {/* 👁 Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
 
               {errors.confirmPassword && (
                 <p className="mt-1 text-xs text-red-500 flex items-center">
@@ -207,7 +236,7 @@ function RegisterPage() {
               )}
             </div>
 
-            {/* Terms and Conditions */}
+            {/* Terms */}
             <div className="flex items-start space-x-2">
               <input
                 type="checkbox"

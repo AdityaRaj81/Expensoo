@@ -92,7 +92,8 @@ function LoginPage() {
                   pattern: {
                     value: /^\S+@\S+$/i,
                     message: 'Invalid email address'
-                  }
+                  },
+                  setValueAs: (value) => value.toLowerCase().trim()   // 👈 normalize here
                 })}
               />
               {errors.email && (
