@@ -10,7 +10,7 @@ import logo from '../../assets/Logo_icon.png';
 function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   const { loading, error } = useSelector((state) => state.auth);
@@ -105,32 +105,50 @@ function LoginPage() {
 
             {/* Password Field */}
             <div className="relative">
-              <label htmlFor="password" className="form-label">
+              <label htmlFor="password" className="form-label flex items-center">
                 <Lock className="inline w-4 h-4 mr-1" />
                 Password
               </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                className={`form-input w-full pr-12 ${errors.password ? 'border-red-400' : ''}`}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                {...register('password', {
-                  required: 'Password is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters'
-                  }
-                })}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  className={`form-input w-full pr-12 ${errors.password ? 'border-red-400' : ''}`}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Password must be at least 6 characters'
+                    }
+                  })}
+                />
 
-              {errors.password && (
-                <p className="mt-1 text-xs text-red-500 flex items-center">
-                  <span className="mr-1">⚠️</span>
-                  {errors.password.message}
-                </p>
-              )}
+                {/* 👁 Custom Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5 pointer-events-none" />
+                  ) : (
+                    <Eye className="w-5 h-5 pointer-events-none" />
+                  )}
+                </button>
+              </div>
+
             </div>
+
+
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-500 flex items-center">
+                <span className="mr-1">⚠️</span>
+                {errors.password.message}
+              </p>
+            )}
+
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between text-sm">
