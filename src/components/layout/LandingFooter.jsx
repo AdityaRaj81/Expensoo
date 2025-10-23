@@ -158,7 +158,7 @@ function LandingFooter() {
               <div className="relative">
                 <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-2xl group-hover:shadow-primary-500/25 transition-all duration-300 group-hover:scale-105">
                   <img
-                    src="/Logo_icon.png"
+                    src="/Logo_7.png"
                     alt="Expensoo Logo"
                     className="w-9 h-9 object-contain filter brightness-0 invert"
                   />
