@@ -111,7 +111,7 @@ function LandingHeader() {
                 {/* Main logo container */}
                 <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-blue-600 rounded-2xl shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
                   <img
-                    src="/Logo_Header.png"
+                    src="./public/logo_1.png"
                     alt="Expensoo Logo"
                     className="w-6 h-6 sm:w-7 sm:h-7 object-contain filter brightness-0 invert transition-transform duration-300 group-hover:scale-110"
                   />
